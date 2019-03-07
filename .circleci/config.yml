@@ -6,6 +6,9 @@ jobs:
     steps:
       - checkout # check out the code in the project directory
       - run: echo "hello world" # run the `echo` command
+      - add_ssh_keys:
+          fingerprints:
+            - "3d:4e:0c:8a:69:10:8f:7e:d4:56:ba:96:68:b4:7f:03"      
       - run: git clone -b develop git@gitlab.com:orgc-edoc/discovery-service.git
       - run: docker build -t ds_platform_api:latest --build-arg ENVS="$(cat ./conf/main.yaml)" --build-arg PUB_KEY="$(cat ./conf/rs256-public.pem)" .
       - run: docker run --name ds_platform_api -d -p 8000:8000 ds_platform_api:latest
