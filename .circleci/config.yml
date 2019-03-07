@@ -8,5 +8,7 @@ jobs:
       - run: git submodule sync
       - run: git submodule update --init
       - run: ls
+      - run: git clone -b develop git@gitlab.com:orgc-edoc/discovery-service.git
+      - run: ls
       - run: docker build -t ds_platform_api:latest --build-arg ENVS="$(cat ./conf/main.yaml)" --build-arg PUB_KEY="$(cat ./conf/rs256-public.pem)" .
       - run: docker run --name ds_platform_api -d -p 8000:8000 ds_platform_api:latest
