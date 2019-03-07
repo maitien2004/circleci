@@ -6,26 +6,28 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints:
-            - "3d:4e:0c:8a:69:10:8f:7e:d4:56:ba:96:68:b4:7f:03" # RSA
+        fingerprints:
+          - "3d:4e:0c:8a:69:10:8f:7e:d4:56:ba:96:68:b4:7f:03" # RSA
       - run:
-          name: Auth with gitlab
-          command: |
-            mkdir -p ~/.ssh/
-            echo -e "Host gitlab.com\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null\n" > ~/.ssh/config
-            chmod 600 ~/.ssh/config
-            ssh-keyscan -Ht rsa gitlab.com >> ~/.ssh/known_hosts            
-      - run: git clone -b develop git@gitlab.com:orgc-edoc/discovery-service.git
+        name: Auth with gitlab
+        command: |
+          mkdir -p ~/.ssh/
+          echo -e "Host gitlab.com\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null\n" > ~/.ssh/config
+          chmod 600 ~/.ssh/config
+          ssh-keyscan -Ht rsa gitlab.com >> ~/.ssh/known_hosts            
       - run: 
-          name: Pull submodule
-          commnad: |
-            cd discovery-service/
-            git submodule sync
-            git submodule update --init
-            ls
+        name: Clone Discovery Service
+        command: git clone -b develop git@gitlab.com:orgc-edoc/discovery-service.git
+      - run: 
+        name: Pull submodule
+        command: |
+          cd discovery-service/
+          git submodule sync
+          git submodule update --init
+          ls
       - run: 
         name: Build docker image
         command: docker build -t ds_platform_api:latest --build-arg ENVS="$(cat ./conf/main.yaml)" --build-arg PUB_KEY="$(cat ./conf/rs256-public.pem)" .        
       - run: 
         name: Run docker image
-        commnad: docker run --name ds_platform_api -d -p 8000:8000 ds_platform_api:latest
+        command: docker run --name ds_platform_api -d -p 8000:8000 ds_platform_api:latest
